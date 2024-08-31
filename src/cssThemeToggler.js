@@ -22,19 +22,48 @@ let themes = [
 // Read theme name read in local storage
 // update CSS variables based on that name
 function getChosenTheme() {
-
+    let foundTheme = localStorage.getItem("theme");
+    console.log(foundTheme);
+    return foundTheme;
 }
 
 // Set theme name to local storage
 // update CSS variables based on that theme
-function setChosenTheme() {
-
+function setChosenTheme(newThemeName) {
+    localStorage.setItem("theme", newThemeName);
 }
+
+if (getChosenTheme() == null) {
+
+    const darkThemeMq = window.matchMedia("(prefers-color-cheme: dark)");
+    if (darkThemeMq.matches) {
+        setChosenTheme("dark");
+        console.log("No theme found, apploed the dark theme");
+    } else {
+        setChosenTheme("light");
+        console.log("No theme found, applied the dark theme");
+    }
+}
+
+function toggleTheme() {
+    if (getChosenTheme() == "dark"){
+        // set to light
+        setChosenTheme("light");
+    } else {
+        // set it to dark
+        setChosenTheme("dark");
+    }
+}
+
+let themeToggleButton = document.getElementById("themeToggle");
+themeToggleButton.onclick= toggleTheme;
+// themeToggleButton.addEventListener("click", toggleTheme);
+
 
 // Loop through properties key in chosen theme object
 // apply those properties to CSS
-function updateChosenTheme() {
-    
+function updateCssVariables() {
+
 }
 
 let rootELement = document.querySelector(":root");
@@ -52,4 +81,5 @@ function getVariablesFromCSS() {
 }
 
 getVariablesFromCSS();
+getChosenTheme();
 
