@@ -1,5 +1,9 @@
 console.log("CSS Theme Toggler loaded and running!")
 
+
+let rootELement = document.querySelector(":root");
+let themeToggleButton = document.getElementById("themeToggle");
+
 let themes = [
     {
         name: "dark",
@@ -12,12 +16,14 @@ let themes = [
     {
         name: "light",
         properties: {
-            backgroundColour: "#87E0e0",
+            backgroundColour: "#63c4d6",
             fontColour: "black",
             "theme-100": "#87E0E0"
         }
     }
 ]; 
+
+
 
 // Read theme name read in local storage
 // update CSS variables based on that name
@@ -31,10 +37,12 @@ function getChosenTheme() {
 // update CSS variables based on that theme
 function setChosenTheme(newThemeName) {
     localStorage.setItem("theme", newThemeName);
+    updateCssVariables();
 }
 
 if (getChosenTheme() == null) {
-
+    // if a theme does not exist in local storage,
+    // get the system light/dark preference and apply
     const darkThemeMq = window.matchMedia("(prefers-color-cheme: dark)");
     if (darkThemeMq.matches) {
         setChosenTheme("dark");
@@ -43,7 +51,22 @@ if (getChosenTheme() == null) {
         setChosenTheme("light");
         console.log("No theme found, applied the dark theme");
     }
+} else {
+    // if a theme does exist in local storage,
+    // apply that themes properties to CSS
+    updateCssVariables();
 }
+
+function updateButtonText() {
+    // read current theme
+    if (getChosenTheme() == "dark") {
+        // change button text to alternate
+        themeToggleButton.innerText = "Change theme to Light";
+    } else {
+        themeToggleButton.innerText = "Change theme to Dark";
+    }
+}
+
 
 function toggleTheme() {
     if (getChosenTheme() == "dark"){
@@ -51,11 +74,11 @@ function toggleTheme() {
         setChosenTheme("light");
     } else {
         // set it to dark
-        setChosenTheme("dark");
+        setChosenTheme("dark");  
     }
 }
 
-let themeToggleButton = document.getElementById("themeToggle");
+
 themeToggleButton.onclick= toggleTheme;
 // themeToggleButton.addEventListener("click", toggleTheme);
 
@@ -63,10 +86,25 @@ themeToggleButton.onclick= toggleTheme;
 // Loop through properties key in chosen theme object
 // apply those properties to CSS
 function updateCssVariables() {
+    // find the matching theme object
+    let matchingTheme = themes.find(themeObject => themeObject.name == getChosenTheme());
+    console.log(matchingTheme);
+    // find the properties object in the matching theme object
+    // for (const cssProperty of matchingTheme.properties) {
+    //     console.log(cssProperty);
+    // }
 
+    // loop through al properties
+    Object.keys(matchingTheme.properties).forEach(cssProperty => {
+        console.log(cssProperty + ": " + matchingTheme.properties[cssProperty]);
+        // apply property value to CSS variables
+        rootELement.style.setProperty(`--${cssProperty}`,matchingTheme.properties[cssProperty]);
+    })
+
+    updateButtonText()
 }
 
-let rootELement = document.querySelector(":root");
+
 
 function getVariablesFromCSS() {
     console.log(rootELement);
